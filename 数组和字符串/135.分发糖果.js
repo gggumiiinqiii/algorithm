@@ -11,16 +11,12 @@ var candy = function (ratings) {
     }
   }
   for (let i = length - 1; i > 0; i--) {
-    if (
-      ratings[i - 1] > ratings[i] &&
-      ratings[i - 1] > Number(ratings[i - 2] ?? 0)
-    ) {
-      candy[i - 1] = Math.max(candy[i], candy[i - 2] ?? 0) + 1;
-    } else if (ratings[i - 1] > ratings[i]) {
-      candy[i - 1] = candy[i] + 1;
+    if (ratings[i - 1] > ratings[i]) {
+      candy[i - 1] = Math.max(candy[i - 1], candy[i] + 1);
     }
   }
   let gg = candy.reduce((a, b) => a + b);
+  console.log(gg);
   return gg;
 };
 module.exports = candy;
