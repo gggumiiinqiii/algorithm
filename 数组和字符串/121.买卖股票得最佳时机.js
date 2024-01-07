@@ -7,7 +7,9 @@ var maxProfit = function (prices) {
   let low = Infinity;
   let result = 0;
   for (let i = 0; i < prices.length; i++) {
+    // 最小值
     low = Math.min(low, prices[i]);
+    // 最大值
     result = Math.max(result, prices[i] - low);
   }
   console.log(result);
