@@ -11,6 +11,7 @@ var findSubstring = function (s, words) {
   let right = 0;
   let chargeMap = {};
   let result = [];
+  //统计字符数{a:1,b:2},这个比用map下面少了一层findIndex的计算少了不少时间复杂度
   for (let word of words) {
     if (!(word in chargeMap)) {
       chargeMap[word] = 0;
