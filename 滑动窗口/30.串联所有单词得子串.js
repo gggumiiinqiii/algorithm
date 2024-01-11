@@ -4,65 +4,60 @@
  * @return {number[]}
  */
 var findSubstring = function (s, words) {
+  let length = s.length; //字符串的长度
+  let oneWordLength = words[0].length; //一个单词的长度
+  let stringLength = words.length * oneWordLength; //子串的长度
+  let left = 0;
+  let right = 0;
+  let chargeMap = {};
   let result = [];
-  let wordLength = words[0].length; // 单个单词的长度
-  let totalLength = wordLength * words.length; // 子串的总长度
-
-  if (s.length < totalLength) {
-    return result; // 如果字符串长度小于子串的总长度，直接返回空结果
-  }
-
-  let wordMap = {};
-
-  // 统计单词出现次数，存储在哈希表中
   for (let word of words) {
-    if (!(word in wordMap)) {
-      wordMap[word] = 0;
+    if (!(word in chargeMap)) {
+      chargeMap[word] = 0;
     }
-    wordMap[word]++;
+    chargeMap[word]++;
   }
-  console.log(wordMap);
-  for (let i = 0; i < wordLength; i++) {
-    let left = i;
-    let right = i;
-    let currentMap = {};
-    let count = 0;
 
-    // 滑动窗口
-    while (right + wordLength <= s.length) {
-      let currentWord = s.substring(right, wordLength);
-      right += wordLength;
-
-      // 如果当前单词不在给定单词列表中，重置窗口和计数
-      if (!(currentWord in wordMap)) {
-        currentMap = {};
-        left = right;
-        count = 0;
-      } else {
-        // 更新当前窗口内单词的出现次数和计数
-        if (!(currentWord in currentMap)) {
-          currentMap[currentWord] = 0;
-        }
-        currentMap[currentWord]++;
-        count++;
-
-        // 移动左边界，确保窗口内单词数量不超过给定单词列表
-        while (currentMap[currentWord] > wordMap[currentWord]) {
-          let leftWord = s.substring(left, wordLength);
-          currentMap[leftWord]--;
-          left += wordLength;
-          count--;
-        }
-
-        // 如果窗口内单词数量等于给定单词列表长度，记录结果
-        if (count === words.length) {
-          result.push(left);
-        }
+  while (right < length) {
+    if (right >= stringLength - 1) {
+      let isstring = isSubstring(
+        s.slice(left, right + 1),
+        chargeMap,
+        oneWordLength,
+        stringLength
+      );
+      if (isstring) {
+        result.push(left);
       }
+      left++;
     }
+    right++;
   }
-
+  console.log(result);
   return result;
 };
-
+function isSubstring(string, chargeMap, oneWordLength, stringLength) {
+  let cloneChargeMap = JSON.parse(JSON.stringify(chargeMap));
+  let stringArr = [];
+  let sumString = "";
+  for (let i = 0; i < stringLength; i++) {
+    sumString += string[i];
+    if ((i + 1) % oneWordLength == 0) {
+      stringArr.push(sumString);
+      sumString = "";
+    }
+  }
+  //console.log(cloneChargeMap);
+  for (let i = 0; i < stringArr.length; i++) {
+    if (cloneChargeMap[stringArr[i]] >= 1) {
+      cloneChargeMap[stringArr[i]]--;
+    }
+  }
+  let sum = 0;
+  Object.keys(cloneChargeMap).forEach((key) => {
+    sum += cloneChargeMap[key];
+  });
+  //等于0就是子串
+  return sum == 0;
+}
 module.exports = findSubstring;
