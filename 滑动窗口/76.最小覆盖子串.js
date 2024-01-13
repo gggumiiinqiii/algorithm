@@ -12,8 +12,8 @@ var minWindow = function (s, t) {
   let right = 0;
   let tMap = new Map();
   let requiredChars = t.length; // 需要匹配的 t 中的唯一字符数
-  let minLen = Infinity;
-  let minSub = "";
+  let minLen = Infinity; //最小长度
+  let minSub = ""; //最小子串
 
   // 初始化 t 中字符的频率映射
   for (let char of t) {
@@ -47,12 +47,10 @@ var minWindow = function (s, t) {
         if (tMap.get(leftChar) > 0) {
           requiredChars++;
         }
-        // console.log("sgag", tMap);
       }
 
       left++;
     }
-    // console.log("right:", right);
     right++;
   }
   console.log(minSub);
