@@ -1,0 +1,13 @@
+const isSameTree = require("../../二叉树/100.相同的树");
+const TreeNode = require("./tree");
+const a = new TreeNode(3);
+a.left = new TreeNode(9);
+a.right = new TreeNode(20);
+a.right.left = new TreeNode(15);
+a.right.right = new TreeNode(7);
+const b = new TreeNode(3);
+b.left = new TreeNode(9);
+b.right = new TreeNode(20);
+b.right.left = new TreeNode(15);
+b.right.right = new TreeNode(7);
+console.log(isSameTree(a, b));
