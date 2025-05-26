@@ -3,28 +3,21 @@
  * @return {number[]}
  */
 var dailyTemperatures = function (temperatures) {
-  console.log(temperatures);
-
-  const stack = [];
-  const length = temperatures.length;
-  const answer = Array.from({ length }).fill(0);
-  const maxTemp = Math.max(...temperatures);
-  for (let i = 0; i < length; i++) {
-    stack.length = 0;
-    if (temperatures[i] == maxTemp) {
-      answer[i] = 0;
-      continue;
+  const n = temperatures.length;
+  const answer = new Array(n).fill(0);
+  const stack = []; //存索引
+  //单调递减栈
+  for (let i = 0; i < n; i++) {
+    while (
+      stack.length &&
+      temperatures[i] > temperatures[stack[stack.length - 1]]
+    ) {
+      console.log(i);
+      console.log(stack);
+      const preIndex = stack.pop();
+      answer[preIndex] = i - preIndex;
     }
-    for (let j = i + 1; j < length; j++) {
-      if (temperatures[j] <= temperatures[i]) {
-        stack.push(temperatures[j]);
-      } else {
-        answer[i] = stack.length + 1;
-        console.log(temperatures[i]);
-        console.log(stack);
-        break;
-      }
-    }
+    stack.push(i);
   }
   console.log(answer);
   return answer;
