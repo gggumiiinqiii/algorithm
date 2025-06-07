@@ -1,0 +1,13 @@
+const ListNode = require("./linkList");
+const isPalindrome = require("../../链表/234.回文链表");
+console.log(">>>>>>环形链表》》测试》》");
+let node1 = new ListNode(2);
+let node2 = new ListNode(4);
+let node3 = new ListNode(4);
+let node4 = new ListNode(2);
+let node5 = new ListNode(2);
+node1.next = node2;
+node2.next = node3;
+node3.next = node4;
+node4.next = node5;
+isPalindrome(node1);
