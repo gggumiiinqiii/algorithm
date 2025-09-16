@@ -6,16 +6,16 @@ function MinHeap() {
 MinHeap.prototype.isEmpty = function () {
   return this.data.length === 0;
 };
-
+//堆顶部
 MinHeap.prototype.front = function () {
   return this.data[0];
 };
-
+//入队
 MinHeap.prototype.enqueue = function (val) {
   this.data.push(val);
   this._siftUp(this.data.length - 1);
 };
-
+// 出队
 MinHeap.prototype.dequeue = function () {
   if (this.data.length === 0) return undefined;
   const top = this.data[0];
