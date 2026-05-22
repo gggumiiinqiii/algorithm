@@ -6,6 +6,7 @@
 var twoSum = function (nums, target) {
   let map = new Map();
   let result = [];
+  //存当前数和索引
   for (let i = 0; i < nums.length; i++) {
     map.set(nums[i], i);
   }
@@ -17,8 +18,6 @@ var twoSum = function (nums, target) {
       break;
     }
   }
-  console.log(result);
-  console.log(map);
   return result;
 };
 module.exports = twoSum;
