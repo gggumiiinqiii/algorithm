@@ -30,11 +30,21 @@ function knapsack2D(weight, value, W) {
   console.log(dp);
   console.log(dp[n - 1][W]);
 }
-
+/*
+[ 0, 0, 0, 0, 15 ]
+[ 0, 0, 0, 15, 15 ]
+[ 0, 0, 15, 15, 15 ]
+[ 0, 15, 15, 15, 15 ]
+[ 0, 15, 15, 15, 35 ]
+[ 0, 15, 15, 20, 35 ]
+[ 0, 15, 15, 20, 40 ]
+*/
 function knapsack1D(weight, value, W) {
   const n = weight.length;
   const dp = Array(W + 1).fill(0);
   for (let i = 0; i < n; i++) {
+    // 必须从后向前遍历背包容量！
+    // 且当容量 j 小于当前物品重量时，由于装不下，dp[j] 保持原值即可，所以循环到 weight[i] 停止
     for (let j = W; j >= weight[i]; j--) {
       dp[j] = Math.max(dp[j], dp[j - weight[i]] + value[i]);
       console.log(dp.slice());
