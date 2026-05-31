@@ -18,7 +18,7 @@ function knapsack2D(weight, value, W) {
     dp[0][j] = value[0];
   }
   for (let i = 1; i < n; i++) {
-    for (let j = 1; j <= W; j++) {
+    for (let j = 0; j <= W; j++) {
       //容量不够
       if (weight[i] > j) {
         dp[i][j] = dp[i - 1][j];
@@ -31,8 +31,18 @@ function knapsack2D(weight, value, W) {
   console.log(dp[n - 1][W]);
 }
 
+function knapsack1D(weight, value, W) {
+  const n = weight.length;
+  const dp = Array(W + 1).fill(0);
+  for (let i = 0; i < n; i++) {
+    for (let j = W; j >= weight[i]; j--) {
+      dp[j] = Math.max(dp[j], dp[j - weight[i]] + value[i]);
+      console.log(dp.slice());
+    }
+  }
+}
 // 测试用例
 const weight = [1, 3, 4];
 const value = [15, 20, 40];
-const W = 1;
-console.log(knapsack2D(weight, value, W)); // 输出: 35 (选择物品0和物品1，重量1+3=4，价值15+20=35)
+const W = 4;
+console.log(knapsack1D(weight, value, W)); // 输出: 35 (选择物品0和物品1，重量1+3=4，价值15+20=35)
