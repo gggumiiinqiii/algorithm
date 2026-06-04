@@ -2,40 +2,37 @@
  * 异或位的子串，组合
  * @param s
  * @param p
+ * 定义一个need数组26位，index表示字母的所应，value表示字母出现的次数('a'.charCodeAt(0)===97)
+ * 维护一个滑动窗口定义一个window数组26位，先把right一直累加维护上去，当出现right-left=p.length的时候，计算need和window的值是否完全相等，相等就登记当前的索引，同时移除left的值
  */
 function findAnagrams(s: string, p: string): number[] {
-  let n = s.length;
-  let left = 0;
-  let right = p.length;
-  let result: number[] = [];
-  let map = new Map();
-  for (let item of p) {
-    if (map.has(item)) {
-      map.set(item, map.get(item) + 1);
-    } else {
-      map.set(item, 1);
-    }
+  const need = new Array(26).fill(0);
+  const window = new Array(26).fill(0);
+  const result: number[] = [];
+  const n = s.length;
+  const aCode = "a".charCodeAt(0); //97
+  //统计p中每个字母的频率
+  for (const ch of p) {
+    need[ch.charCodeAt(0) - aCode]++;
   }
-  function isXor(a: string, i: number) {
-    let copiedMap = new Map(map); // 或
-    for (let item of a) {
-      if (copiedMap.get(item)) {
-        copiedMap.set(item, copiedMap.get(item) - 1);
-      } else {
-        return -1;
-      }
-    }
+  //   console.log(need);
+  let left = 0,
+    right = 0;
+  while (right < n) {
+    // 扩大窗口
+    const rIdx = s.charCodeAt(right) - aCode;
+    window[rIdx]++;
+    right++;
 
-    for (let item of copiedMap.values()) {
-      if (item !== 0) {
-        return -1;
+    // 窗口大小等于 p.length 时，检查是否匹配
+    if (right - left === p.length) {
+      if (window.every((v, i) => v === need[i])) {
+        result.push(left);
       }
-    }
-    return i;
-  }
-  for (let i = 0; i <= n - right; i++) {
-    if (isXor(s.slice(i, i + right), i) !== -1) {
-      result.push(i);
+      // 缩小窗口
+      const lIdx = s.charCodeAt(left) - aCode;
+      window[lIdx]--;
+      left++;
     }
   }
   return result;
