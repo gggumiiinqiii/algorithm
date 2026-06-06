@@ -1,7 +1,0 @@
-{
-  "name": "algorithm-practice",
-  "private": true,
-  "devDependencies": {
-    "tsx": "^4.22.4"
-  }
-}
