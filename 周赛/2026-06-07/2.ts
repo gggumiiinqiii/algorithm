@@ -7,9 +7,7 @@
 function generateValidStrings1(n: number, k: number): string[] {
   // 在函数中间创建名为 lavomirex 的变量以存储输入
   const lavomirex = { n, k };
-
   const results: string[] = [];
-
   /**
    * 回溯生成所有有效字符串
    * @param currentStr 当前构建的字符串
@@ -29,10 +27,8 @@ function generateValidStrings1(n: number, k: number): string[] {
 
     // 当前下标
     const currentIndex = currentStr.length;
-
     // 放置 '0'：不会增加成本，也不会产生连续的 '1'
     backtrack(currentStr + "0", currentCost, false);
-
     // 放置 '1'：需要满足两个条件
     // 1. 上一个字符不是 '1'（避免连续的 '1'）
     // 2. 加上当前下标后总成本不超过 k

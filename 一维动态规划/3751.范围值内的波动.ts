@@ -15,7 +15,7 @@
 // ──────────────────────────────────────────────
 // 解法一：暴力枚举（最直接，适合 10^5 的数据范围）
 // ──────────────────────────────────────────────
-function totalWaviness_brute(num1: number, num2: number): number {
+export function totalWaviness_brute(num1: number, num2: number): number {
   let total = 0;
   for (let i = Math.max(101, num1); i <= num2; i++) {
     total += getWaviness(i);
@@ -63,42 +63,100 @@ function getWaviness_mod(n: number): number {
 }
 
 // ──────────────────────────────────────────────
-// 解法二：一维 DP + 前缀和（"一维动态规划"）
+// 解法二：数位 DP（适用于大范围，如 num2 可达 10^9+）
 // ──────────────────────────────────────────────
-// dp[i] = 数字 i 的波动值
-// prefix[i] = [0, i] 范围内所有数字的波动值之和
-// 递推：prefix[i] = prefix[i - 1] + dp[i]
-// 答案：prefix[num2] - prefix[num1 - 1]
+// 核心思想：f(N) = [0, N] 范围内所有数字的波动值之和
+// 答案 = f(num2) - f(num1 - 1)
+// 数位 DP 从高位向低位逐位构造数字，状态包括：
+//   - pos:  当前处理到第几位（从左往右，从 0 开始）
+//   - prev: 前一位数字（-1 表示不存在）
+//   - prev2: 前两位数字（-1 表示不存在）
+//   - tight: 是否紧贴上限 N
+//   - started: 是否已开始放置非零数字（处理前导零）
+// 在放置第 pos 位的数字 d 时，可以判断 prev（即第 pos-1 位）是否为峰/谷
 
-function totalWaviness_dp(num1: number, num2: number): number {
-  const MAX = 100000;
-  const dp = new Array<number>(MAX + 1).fill(0);
+function countWavinessUpTo(N: number): number {
+  if (N < 100) return 0;
 
-  // 1. 递推计算每个数字的波动值
-  for (let i = 101; i <= MAX; i++) {
-    dp[i] = getWaviness_mod(i);
+  // 提取 N 的各个数位（高位在前）
+  const digits: number[] = [];
+  let temp = N;
+  while (temp > 0) {
+    digits.push(temp % 10);
+    temp = Math.floor(temp / 10);
   }
-  console.log(dp);
-  // 2. 前缀和
-  const prefix = new Array<number>(MAX + 1).fill(0);
-  for (let i = 1; i <= MAX; i++) {
-    prefix[i] = prefix[i - 1] + dp[i];
+  digits.reverse();
+  const n = digits.length;
+
+  // memo 缓存：key = "pos,prev,prev2,tight,started" → [count, sum]
+  // count = 子树中能构造出的数字个数
+  // sum   = 这些数字的波动值之和
+  const memo = new Map<string, [number, number]>();
+
+  function dfs(
+    pos: number,
+    prev: number,
+    prev2: number,
+    tight: boolean,
+    started: boolean
+  ): [number, number] {
+    if (pos === n) return [1, 0]; // 1 种完成方式（当前已确定的数位序列），波动值 0
+
+    const key = `${pos},${prev},${prev2},${tight ? 1 : 0},${started ? 1 : 0}`;
+    if (memo.has(key)) return memo.get(key)!;
+
+    const limit = tight ? digits[pos] : 9;
+    let totalCount = 0;
+    let totalSum = 0;
+
+    for (let d = 0; d <= limit; d++) {
+      const nextTight = tight && d === limit;
+      const nextStarted = started || d > 0;
+
+      // 判断 prev（前一个确定的数位）是否为峰/谷
+      // 需要 prev 和 prev2 都存在（即至少已有两个前导数字）
+      let add = 0;
+      if (nextStarted && prev !== -1 && prev2 !== -1) {
+        if (
+          (prev > prev2 && prev > d) || // 峰
+          (prev < prev2 && prev < d)    // 谷
+        ) {
+          add = 1;
+        }
+      }
+
+      const nextPrev = nextStarted ? d : -1;
+      const nextPrev2 = nextStarted ? prev : -1;
+
+      const [cnt, sum] = dfs(pos + 1, nextPrev, nextPrev2, nextTight, nextStarted);
+      totalCount += cnt;
+      // add=1 说明 prev 这个数位是峰/谷，这个贡献要算到子树中**每一个**完成的数字里
+      totalSum += add * cnt + sum;
+    }
+
+    memo.set(key, [totalCount, totalSum]);
+    return [totalCount, totalSum];
   }
 
-  return prefix[num2] - prefix[num1 - 1];
+  return dfs(0, -1, -1, true, false)[1];
+}
+
+export function totalWaviness_dp(num1: number, num2: number): number {
+  return countWavinessUpTo(num2) - countWavinessUpTo(num1 - 1);
 }
 
 // ──────────────────────────────────────────────
-// 统一导出：默认用暴力枚举即可
 // ──────────────────────────────────────────────
-function totalWaviness(num1: number, num2: number): number {
-  return totalWaviness_brute(num1, num2);
+// 默认使用数位 DP（可处理大范围）
+// ──────────────────────────────────────────────
+export function totalWaviness(num1: number, num2: number): number {
+  return totalWaviness_dp(num1, num2);
 }
 
 // ──────────────────────────────────────────────
 // 测试
 // ──────────────────────────────────────────────
-console.log(totalWaviness(120, 130)); // 3
-// console.log(totalWaviness(198, 202)); // 3
+console.log(totalWaviness(1434874, 29196624)); // 3
+console.log(totalWaviness(198, 202)); // 3
 // console.log(totalWaviness(4848, 4848)); // 2
 // console.log(totalWaviness(1, 100)); // 0
